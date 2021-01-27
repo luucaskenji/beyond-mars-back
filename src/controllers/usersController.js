@@ -12,7 +12,20 @@ class UsersController {
         const newUser = await User.create({ name });
         await Session.create({ userId: newUser.id, token: uuid.v4() });
 
-        return newUser;
+        return User.findOne({
+            where: {
+                id: newUser.id
+            },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+            },
+            include: {
+                model: Session,
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt', 'userId']
+                }
+            }
+        });
     }
 }
 

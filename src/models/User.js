@@ -1,6 +1,8 @@
 const { Sequelize } = require('sequelize');
 const sequelize = require('../utils/database');
 
+const Session = require('./Session');
+
 class User extends Sequelize.Model { }
 
 User.init(
@@ -29,5 +31,7 @@ User.init(
         modelName: 'user'
     }
 );
+
+User.hasOne(Session);
 
 module.exports = User;
