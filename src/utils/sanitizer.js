@@ -5,8 +5,6 @@ const sanitize = array => {
         array.splice(i, 1, stripHtml(e).result);
     });
 
-    console.log(array)
-
     return array;
 };
 
