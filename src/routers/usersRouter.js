@@ -14,8 +14,7 @@ router.post('/', async (req, res) => {
 
         res.status(201).send(createdUser);
     }
-    catch(err) {
-        console.error(err);
+    catch {
         res.sendStatus(500);
     }
 });
