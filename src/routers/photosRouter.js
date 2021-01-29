@@ -16,4 +16,18 @@ router.post('/:id/likes', async (req, res) => {
     }
 });
 
+router.get('/:id/likes', async (req, res) => {
+    const id = parseInt(req.params.id);
+
+    try {
+        const requiredPhoto = await photosController.getLikes(id);
+
+        res.send(requiredPhoto);
+    }
+    catch {
+        console.error(err);
+        res.sendStatus(500);
+    }
+});
+
 module.exports = router;

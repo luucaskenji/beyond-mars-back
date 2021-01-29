@@ -11,6 +11,14 @@ class PhotosController {
         }
         else return await Photo.create({ id });
     }
+
+    getLikes(id) {
+        return Photo.findByPk(id, {
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+            }
+        });
+    }
 }
 
 module.exports = new PhotosController();
