@@ -12,6 +12,12 @@ router.post('/', async (req, res) => {
         
         const createdUser = await usersController.createUser(name);
 
+        const cookieConfig = {
+            maxAge: 14*24*60*60*1000,
+            httpOnly: false
+        }
+
+        res.cookie('token', createdUser.session.token, cookieConfig);
         res.status(201).send(createdUser);
     }
     catch {
