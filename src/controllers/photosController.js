@@ -12,12 +12,14 @@ class PhotosController {
         else return await Photo.create({ id });
     }
 
-    getLikes(id) {
-        return Photo.findByPk(id, {
+    async getLikes(id) {
+        const photo = await Photo.findByPk(id, {
             attributes: {
                 exclude: ['createdAt', 'updatedAt']
             }
         });
+
+        return photo || { id, likes: 0 };
     }
 }
 
