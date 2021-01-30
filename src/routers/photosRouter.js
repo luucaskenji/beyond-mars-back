@@ -1,9 +1,10 @@
 const router = require('express').Router();
 
 const photosController = require('../controllers/photosController');
+const authMiddleware = require('../middlewares/authMiddleware');
 const NotFoundError = require('../errors/NotFoundError');
 
-router.post('/:id/likes', async (req, res) => {
+router.post('/:id/likes', authMiddleware, async (req, res) => {
     const id = parseInt(req.params.id);
 
     try {
@@ -17,7 +18,7 @@ router.post('/:id/likes', async (req, res) => {
     }
 });
 
-router.post('/:id/dislikes', async (req, res) => {
+router.post('/:id/dislikes', authMiddleware, async (req, res) => {
     const id = parseInt(req.params.id);
 
     try {

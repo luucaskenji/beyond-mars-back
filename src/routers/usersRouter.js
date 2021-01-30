@@ -47,7 +47,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
     }
 });
 
-router.post('/:id/sign-out', async (req, res) => {
+router.post('/:id/sign-out', authMiddleware, async (req, res) => {
     const id = parseInt(req.params.id);
 
     try {
