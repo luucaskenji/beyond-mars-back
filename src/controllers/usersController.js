@@ -42,6 +42,15 @@ class UsersController {
 
         return requiredUser;
     }
+
+    async delete(id) {
+        const user = await User.findByPk(id);
+
+        if (!user) throw new NotFoundError('User not found');
+        
+        await Session.destroy({ where: { userId: id } });
+        await user.destroy();
+    }
 }
 
 module.exports = new UsersController();

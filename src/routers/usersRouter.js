@@ -1,8 +1,8 @@
 const router = require('express').Router();
 
 const usersController = require('../controllers/usersController');
-const NotFoundError = require('../errors/NotFoundError');
 const usersSchemas = require('../schemas/usersSchemas');
+const NotFoundError = require('../errors/NotFoundError');
 
 router.post('/', async (req, res) => {
     const { error } = usersSchemas.userData.validate(req.body);
@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
         res.cookie('token', createdUser.session.token, cookieConfig);
         res.status(201).send(createdUser);
     }
-    catch (err) {
+    catch(err) {
         console.error(err);
         res.sendStatus(500);
     }
@@ -39,7 +39,22 @@ router.put('/:id', async (req, res) => {
 
         res.send(updatedUser);
     }
-    catch (err) {
+    catch(err) {
+        console.error(err);
+        if (err instanceof NotFoundError) res.status(404).send(err.message);
+        else res.sendStatus(500);
+    }
+});
+
+router.post('/:id/sign-out', async (req, res) => {
+    const id = parseInt(req.params.id);
+
+    try {
+        await usersController.delete(id);
+
+        res.sendStatus(204);
+    }
+    catch(err) {
         console.error(err);
         if (err instanceof NotFoundError) res.status(404).send(err.message);
         else res.sendStatus(500);
