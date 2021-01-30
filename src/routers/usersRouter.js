@@ -1,5 +1,6 @@
 const router = require('express').Router();
 
+const authMiddleware = require('../middlewares/authMiddleware');
 const usersController = require('../controllers/usersController');
 const usersSchemas = require('../schemas/usersSchemas');
 const NotFoundError = require('../errors/NotFoundError');
@@ -27,7 +28,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
     const { error } = usersSchemas.userData.validate(req.body);
     if (error) return res.status(422).send(error.details[0].message);
 
