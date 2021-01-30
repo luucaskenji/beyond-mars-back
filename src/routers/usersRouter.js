@@ -1,16 +1,17 @@
 const router = require('express').Router();
 
 const usersController = require('../controllers/usersController');
+const NotFoundError = require('../errors/NotFoundError');
 const usersSchemas = require('../schemas/usersSchemas');
 
 router.post('/', async (req, res) => {
     const { error } = usersSchemas.userData.validate(req.body);
     if (error) return res.status(422).send(error.details[0].message);
 
-    try {
-        let { name } = req.body;
-        
-        const createdUser = await usersController.createUser(name);
+    const { name } = req.body;
+
+    try {        
+        const createdUser = await usersController.create(name);
 
         const cookieConfig = {
             maxAge: 14*24*60*60*1000,
@@ -20,8 +21,28 @@ router.post('/', async (req, res) => {
         res.cookie('token', createdUser.session.token, cookieConfig);
         res.status(201).send(createdUser);
     }
-    catch {
+    catch (err) {
+        console.error(err);
         res.sendStatus(500);
+    }
+});
+
+router.put('/:id', async (req, res) => {
+    const { error } = usersSchemas.userData.validate(req.body);
+    if (error) return res.status(422).send(error.details[0].message);
+
+    const id = parseInt(req.params.id);
+    const { name } = req.body;
+    
+    try {
+        const updatedUser = await usersController.edit(id, name);
+
+        res.send(updatedUser);
+    }
+    catch (err) {
+        console.error(err);
+        if (err instanceof NotFoundError) res.status(404).send(err.message);
+        else res.sendStatus(500);
     }
 });
 
