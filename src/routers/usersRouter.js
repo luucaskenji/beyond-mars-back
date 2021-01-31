@@ -53,6 +53,7 @@ router.post('/:id/sign-out', authMiddleware, async (req, res) => {
     try {
         await usersController.delete(id);
 
+        res.clearCookie('token');
         res.sendStatus(204);
     }
     catch(err) {
