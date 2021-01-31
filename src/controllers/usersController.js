@@ -7,8 +7,7 @@ const NotFoundError = require('../errors/NotFoundError');
 
 class UsersController {
     async create(name) {
-        [name] = sanitize([name]);
-        name = name.replace(name[0], name[0].toUpperCase());
+        name = this._sanitizeAndStandardize(name);
         
         const newUser = await User.create({ name });
         await Session.create({ userId: newUser.id, token: uuid.v4() });
@@ -30,8 +29,7 @@ class UsersController {
     }
 
     async edit(id, newName) {
-        [newName] = sanitize([newName]);
-        newName = newName.replace(newName[0], newName[0].toUpperCase());
+        newName = this._sanitizeAndStandardize(newName);
 
         const requiredUser = await User.findByPk(id);
 
@@ -50,6 +48,13 @@ class UsersController {
         
         await Session.destroy({ where: { userId: id } });
         await user.destroy();
+    }
+
+    _sanitizeAndStandardize(name) {
+        [name] = sanitize([name]);
+        name = name.replace(name[0], name[0].toUpperCase());
+
+        return name;
     }
 }
 
