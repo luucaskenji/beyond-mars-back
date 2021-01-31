@@ -45,3 +45,14 @@ describe('editing user', () => {
         expect(editFunction).rejects.toThrow('User not found');
     });
 });
+
+describe('deleting user', () => {
+    it('should throw a NotFoundError if required user does not exist - function edit', async () => {
+        User.findByPk.mockResolvedValueOnce(null);
+
+        const editFunction = usersController.edit(1, 'Lucas');
+
+        expect(editFunction).rejects.toThrow(NotFoundError);
+        expect(editFunction).rejects.toThrow('User not found');
+    });
+});
