@@ -32,6 +32,4 @@ User.init(
     }
 );
 
-User.hasOne(Session);
-
 module.exports = User;
