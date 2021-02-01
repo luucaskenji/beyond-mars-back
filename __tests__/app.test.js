@@ -93,6 +93,18 @@ describe('PUT /users/:id', () => {
         });
     });
 
+    it('should return status code 403 if an invalid token is sent', async () => {
+        const body = { name: 'Lucas Timoshenko' };
+
+        const testUser = await agent.post('/users').send({ name: 'Lucas' });
+        const response = await agent
+            .put(`/users/${testUser.body.id}`)
+            .set('cookie', 'token=anInvalidToken')
+            .send(body);
+        
+        expect(response.status).toBe(403);
+    });
+
     it('should return status code 404 if there is not any user in database with sent id', async () => {
         const spy = jest.spyOn(sessionsController, 'findByToken');
 
