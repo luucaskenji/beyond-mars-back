@@ -240,3 +240,35 @@ describe('POST /photos/:id/likes', () => {
         );
     });
 });
+
+describe('POST /photos/:id/dislikes', () => {
+    it('should return sent photo with 1 less like if it exists on database', async () => {
+        const photoId = 123;
+
+        const testUser = await agent.post('/users').send({ name: 'Lucas' });
+        await agent
+            .post(`/photos/${photoId}/likes`)
+            .set('cookie', `token=${testUser.body.session.token}`);
+
+        const response = await agent
+            .post(`/photos/${photoId}/dislikes`)
+            .set('cookie', `token=${testUser.body.session.token}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(
+            expect.objectContaining({
+                id: photoId,
+                likes: 0
+            })
+        );
+    });
+
+    it('should return status code 404 if sent photo id is not on database', async () => {
+        const testUser = await agent.post('/users').send({ name: 'Lucas' });
+        const response = await agent
+            .post('/photos/14597/dislikes')
+            .set('cookie', `token=${testUser.body.session.token}`)
+
+        expect(response.status).toBe(404);
+    });
+});
