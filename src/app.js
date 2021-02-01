@@ -9,6 +9,7 @@ app.use(express.json());
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 
+require('./utils/loadRelationships');
 const usersRouter = require('./routers/usersRouter');
 const photosRouter = require('./routers/photosRouter');
 
