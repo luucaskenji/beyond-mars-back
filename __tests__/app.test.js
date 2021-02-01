@@ -272,3 +272,39 @@ describe('POST /photos/:id/dislikes', () => {
         expect(response.status).toBe(404);
     });
 });
+
+describe('GET /photos/:id/likes', () => {
+    it("should return status code 200 and some photo's likes if sent photo id exists on database", async () => {
+        const photoId = 123;
+
+        const testUser = await agent.post('/users').send({ name: 'Lucas' });
+        await agent
+            .post(`/photos/${photoId}/likes`)
+            .set('cookie', `token=${testUser.body.session.token}`);
+
+        const response = await agent
+            .get(`/photos/${photoId}/likes`)
+            .set('cookie', `token=${testUser.body.session.token}`)
+        
+        expect(response.status).toBe(200);
+        expect(response.body).toMatchObject({
+            id: photoId,
+            likes: 1
+        });
+    });
+
+    it('should return object with sent photo id and no likes if sent photo id does not exist on database', async () => {
+        const photoId = 123;
+
+        const testUser = await agent.post('/users').send({ name: 'Lucas' });
+        const response = await agent
+            .get(`/photos/${photoId}/likes`)
+            .set('cookie', `token=${testUser.body.session.token}`)
+        
+        expect(response.status).toBe(200);
+        expect(response.body).toMatchObject({
+            id: photoId,
+            likes: 0
+        });
+    });
+});
