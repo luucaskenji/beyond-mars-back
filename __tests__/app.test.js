@@ -200,3 +200,43 @@ describe('POST /users/:id/sign-out', () => {
         spy.mockRestore();
     });
 });
+
+describe('POST /photos/:id/likes', () => {
+    it('should save sent photo on database and return it with 1 like', async () => {
+        const photoId = 123;
+
+        const testUser = await agent.post('/users').send({ name: 'Lucas' });
+        const response = await agent
+            .post(`/photos/${photoId}/likes`)
+            .set('cookie', `token=${testUser.body.session.token}`);
+        
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(
+            expect.objectContaining({
+                id: photoId,
+                likes: 1
+            })
+        );
+    });
+
+    it('should return photo with 2 likes if sent photo id was already saved on database', async () => {
+        const photoId = 123;
+
+        const testUser = await agent.post('/users').send({ name: 'Lucas' });
+        await agent
+            .post(`/photos/${photoId}/likes`)
+            .set('cookie', `token=${testUser.body.session.token}`);
+        
+        const response = await agent
+            .post(`/photos/${photoId}/likes`)
+            .set('cookie', `token=${testUser.body.session.token}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(
+            expect.objectContaining({
+                id: photoId,
+                likes: 2
+            })
+        );
+    });
+});
