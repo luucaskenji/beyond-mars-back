@@ -3,7 +3,6 @@ const supertest = require('supertest');
 const db = require('../src/utils/database');
 const app = require('../src/app');
 const sessionsController = require('../src/controllers/sessionsController');
-const NotFoundError = require('../src/errors/NotFoundError');
 
 const agent = supertest(app);
 
@@ -77,7 +76,7 @@ describe('POST /users', () => {
     });
 });
 
-describe('PUT /users', () => {
+describe('PUT /users/:id', () => {
     it("should change user's name if it passes in joi validation", async () => {
         const body = { name: 'Lucas Timoshenko' };
 
@@ -156,5 +155,36 @@ describe('PUT /users', () => {
             .send(body);
 
         expect(response.status).toBe(422);
+    });
+});
+
+describe('POST /users/:id/sign-out', () => {
+    it('should return status code 204 if signing out process has been successfully done', async () => {
+        const testUser = await agent.post('/users').send({ name: 'Lucas' });
+        const response = await agent
+            .post(`/users/${testUser.body.id}/sign-out`)
+            .set('cookie', `token=${testUser.body.session.token}`);
+
+        expect(response.status).toBe(204);
+    });
+
+    it('should return status code 403 if invalid token is sent', async () => {
+        const testUser = await agent.post('/users').send({ name: 'Lucas' });
+        const response = await agent
+            .post(`/users/${testUser.body.id}/sign-out`)
+            .set('cookie', 'token=anInvalidToken');
+
+        expect(response.status).toBe(403);
+    });
+
+    it('should return status code 404 if there is not any user in database with sent id', async () => {
+        const spy = jest.spyOn(sessionsController, 'findByToken');
+        sessionsController.findByToken.mockImplementationOnce(() => true);        
+        
+        const response = await agent.post('/users/12584684/sign-out');
+
+        expect(response.status).toBe(404);
+
+        spy.mockRestore();
     });
 });
